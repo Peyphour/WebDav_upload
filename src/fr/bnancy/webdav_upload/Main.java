@@ -6,6 +6,7 @@ import com.github.sardine.SardineFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * Created by bertrand on 01/03/17.
@@ -14,6 +15,8 @@ import java.io.IOException;
  * args[1] => WebDav username
  * args[2] => WebDav password
  * args[3] => WebDav URL
+ *
+ * task Gradle fatJar to create a runnable Jar file
  */
 public class Main {
 
@@ -33,12 +36,12 @@ public class Main {
         for(File f : root.listFiles()) {
             String relativePath = root.toURI().relativize(f.toURI()).getPath();
             if(f.isDirectory()) {
-                System.out.println("Creating dir " + root.getPath() + relativePath);
+                System.out.println("Creating dir " + URLEncoder.encode(root.getPath() + relativePath));
                 sardine.createDirectory(url + relativePath);
                 uploadDir(sardine, f, url + relativePath);
                 f.delete();
             } else if(f.isFile()) {
-                System.out.println("Uploading file " + root.getPath() + relativePath);
+                System.out.println("Uploading file " + URLEncoder.encode(root.getPath() + relativePath));
                 sardine.put(url + relativePath, new FileInputStream(f));
                 f.delete();
             }
