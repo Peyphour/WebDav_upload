@@ -6,7 +6,6 @@ import com.github.sardine.SardineFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
 
 /**
  * Created by bertrand on 01/03/17.
@@ -25,6 +24,8 @@ public class Main {
 
         File root = new File(args[0]);
 
+        sanitizeNames(root);
+
         try {
             uploadDir(sardine, root, args[3]);
         } catch (IOException e) {
@@ -32,9 +33,18 @@ public class Main {
         }
     }
 
+    private static void sanitizeNames(File root) {
+        for(File f : root.listFiles()) {
+            if(f.isDirectory())
+                sanitizeNames(f);
+            System.out.println("renaming " + f.getName() + " to " + f.getName().replaceAll("[^a-zA-Z0-9.-/]", "_"));
+            f.renameTo(new File(f.getParent()  + "/" + f.getName().replaceAll("[^a-zA-Z0-9.-/]", "_")));
+        }
+    }
+
     private static void uploadDir(Sardine sardine, File root, String url) throws IOException {
         for(File f : root.listFiles()) {
-            String relativePath = URLEncoder.encode(root.toURI().relativize(f.toURI()).getPath());
+            String relativePath = root.toURI().relativize(f.toURI()).getPath();
             if(f.isDirectory()) {
                 System.out.println("Creating dir " + root.getPath() + relativePath);
                 sardine.createDirectory(url + relativePath);
