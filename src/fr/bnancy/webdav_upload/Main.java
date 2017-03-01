@@ -34,14 +34,14 @@ public class Main {
 
     private static void uploadDir(Sardine sardine, File root, String url) throws IOException {
         for(File f : root.listFiles()) {
-            String relativePath = root.toURI().relativize(f.toURI()).getPath();
+            String relativePath = URLEncoder.encode(root.toURI().relativize(f.toURI()).getPath());
             if(f.isDirectory()) {
-                System.out.println("Creating dir " + URLEncoder.encode(root.getPath() + relativePath));
+                System.out.println("Creating dir " + root.getPath() + relativePath);
                 sardine.createDirectory(url + relativePath);
                 uploadDir(sardine, f, url + relativePath);
                 f.delete();
             } else if(f.isFile()) {
-                System.out.println("Uploading file " + URLEncoder.encode(root.getPath() + relativePath));
+                System.out.println("Uploading file " + root.getPath() + relativePath);
                 sardine.put(url + relativePath, new FileInputStream(f));
                 f.delete();
             }
